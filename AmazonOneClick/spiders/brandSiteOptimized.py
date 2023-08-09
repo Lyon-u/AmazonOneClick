@@ -23,7 +23,7 @@ class BrandSiteSpider(scrapy.Spider):
 
         navs = response.xpath("//ul[@class='Navigation__navList__HrEra']")
         pages = [self._extract_page_info(selector, response) for selector in navs.xpath("./li")]
-        filtered_pages = [page for page in pages if page]
+        filtered_pages = [page for page in pages if page and '/feed' not in page['page_url']]
         yield AmazonBrandSite(brand_info=brand_info, pages=filtered_pages)
 
     def _extract_page_info(self, selector, response):
