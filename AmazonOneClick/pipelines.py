@@ -24,7 +24,19 @@ class GenerateID:
         return task_id
 
 
-class AmazononeclickPipeline:
+class AmazonOneclickPipelineA:
     def process_item(self, item, spider):
         print(item)
+        return item
+
+
+class UpdateStatus:
+    def process_item(self, item, spider):
+        spider_name = spider.name
+        if spider_name == 'brandSiteSpider':
+            item['status'] = 'PipelineA Done'
+        if spider_name == 'pageSpider':
+            item['status'] = 'PipelineB Done'
+        if spider_name == 'productSpider':
+            item['status'] = 'PipelineC Done'
         return item
