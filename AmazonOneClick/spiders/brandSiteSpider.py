@@ -1,10 +1,18 @@
 import scrapy
 from AmazonOneClick.items import AmazonBrandSite
+from AmazonOneClick.pipelines import GenerateID
 
 
 class BrandSiteSpider(scrapy.Spider):
-    name = "brandSiteSpiderop"
+    name = "brandSiteSpider"
     allowed_domains = ["amazon.com"]
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            "AmazonOneClick.pipelines.GenerateID": 1,
+            "AmazonOneClick.pipelines.AmazonOneclickPipelineA": 3,
+            "AmazonOneClick.pipelines.UpdateStatus": 2,
+        }
+    }
 
     def __init__(self, url=None, *args, **kwargs):
         super(BrandSiteSpider, self).__init__(*args, **kwargs)
@@ -42,6 +50,8 @@ class BrandSiteSpider(scrapy.Spider):
                         selector.xpath("./div[contains(@class,'Navigation__navList__HrEra level2')]/ul/li")]
             filtered_subpages = [subpage for subpage in subpages if subpage]
             page_info["sub_pages"] = filtered_subpages
+        else:
+            page_info["pageID"] = self._generate_page_id()
 
         return page_info
 
@@ -53,8 +63,11 @@ class BrandSiteSpider(scrapy.Spider):
 
         subpage_info["page_name"] = self._get_page_name(page_href_selector)
         subpage_info["page_url"] = response.urljoin(page_href_selector.xpath("./@href").get(''))
-
+        subpage_info["pageID"] = self._generate_page_id()
         return subpage_info
 
     def _get_page_name(self, selector):
         return selector.xpath("./span/text()").get() or selector.xpath("./span/span/text()").get() or ""
+
+    def _generate_page_id(self):
+        return GenerateID.generate_id()
