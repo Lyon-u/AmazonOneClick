@@ -11,3 +11,13 @@ class AmazonBrandSite(scrapy.Item):
     pages = scrapy.Field()
     task_id = scrapy.Field()
     status = scrapy.Field()
+
+
+class Product(scrapy.Item):
+    name = scrapy.Field()
+    price = scrapy.Field()
+    stars = scrapy.Field()
+    images = scrapy.Field()
+    rating_counts = scrapy.Field()
+    feature_bullets = scrapy.Field()
+    variant_data = scrapy.Field()
