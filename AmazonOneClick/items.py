@@ -10,3 +10,4 @@ class AmazonBrandSite(scrapy.Item):
     brand_info = scrapy.Field()
     pages = scrapy.Field()
     task_id = scrapy.Field()
+    status = scrapy.Field()
