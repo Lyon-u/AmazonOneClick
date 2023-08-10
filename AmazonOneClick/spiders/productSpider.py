@@ -1,4 +1,14 @@
-import scrapy
+import scrapy, json, re
+from urllib.parse import urlencode
+from AmazonOneClick.items import Product
+
+API_KEY = 'ae34894f-c29b-4bb1-a700-778de3f7232c'
+
+
+def get_scrapeops_url(url):
+    payload = {'api_key': API_KEY, 'url': url}
+    proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
+    return proxy_url
 
 
 class ProductspiderSpider(scrapy.Spider):
@@ -30,43 +40,28 @@ class ProductspiderSpider(scrapy.Spider):
         "https://www.amazon.com/COOFANDY-Gym-Shorts-Weightlifting-Bodybuilding/dp/B08HWZ7ZNX?ref_=ast_sto_dp&th=1&psc=1",
         "https://www.amazon.com/COOFANDY-Cotton-Casual-Blazer-Lightweight/dp/B07KWN8S8H?ref_=ast_sto_dp&th=1&psc=1"
     ]
-    cookies = {
-        "anonymid": "j7wsz80ibwp8x3",
-        "_r01_": "1",
-        "ln_uact": "mr_mao_hacker@163.com",
-        "_de": "BF09EE3A28DED52E6B65F6A4705D973F1383380866D39FF5",
-        "depovince": "GW",
-        "jebecookies": "2fb888d1-e16c-4e95-9e59-66e4a6ce1eae|||||",
-        "ick_login": "1c2c11f1-50ce-4f8c-83ef-c1e03ae47add",
-        "p": "158304820d08f48402be01f0545f406d9",
-        "first_login_flag": "1",
-        "ln_hurl": "http://hdn.xnimg.cn/photos/hdn521/20180711/2125/main_SDYi_ae9c0000bf9e1986.jpg",
-        "t": "adb2270257904fff59f082494aa7f27b9",
-        "societyguester": "adb2270257904fff59f082494aa7f27b9",
-        "id": "327550029",
-        "xnsid": "4a536121",
-        "loginfrom": "syshome",
-        "wp_fold": "0"
-    }
-
-    headers = {
-        'Host': 'www.amazon.com',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; \
-                           SM-A520F Build/NRD90M; wv) AppleWebKit/537.36 \
-                           (KHTML, like Gecko) Version/4.0 \
-                           Chrome/65.0.3325.109 Mobile Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,\
-                           application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            "AmazonOneClick.pipelines.AmazonOneclickPipelineA": 3,
+        }
     }
 
     def start_requests(self):
         for url in self.start_urls:
-            yield scrapy.Request(url=url, callback=self.parse, method='GET',headers=self.headers,cookies=self.cookies)
+            yield scrapy.Request(url=get_scrapeops_url(url), callback=self.parse, method='GET')
             break
 
     def parse(self, response):
-        print(response.text)
-        image_group_selectors = response.xpath(
-            "//span[@id='productTitle']")
-        print(image_group_selectors)
-        pass
+        image_data = json.loads(re.findall(r"colorImages':.*'initial':\s*(\[.+?\])},\n", response.text)[0])
+        variant_data = re.findall(r'dimensionValuesDisplayData"\s*:\s* ({.+?}),\n', response.text)
+        feature_bullets = [bullet.strip() for bullet in response.css("#feature-bullets li ::text").getall()]
+        price = response.css('.a-price span[aria-hidden="true"] ::text').get("")
+        if not price:
+            price = response.css('.a-price .a-offscreen ::text').get("")
+        yield Product(name=response.css("#productTitle::text").get("").strip(),
+                      price=price,
+                      stars=response.css("i[data-hook=average-star-rating] ::text").get("").strip(),
+                      rating_counts=response.css("div[data-hook=total-review-count] ::text").get("").strip(),
+                      feature_bullets=feature_bullets,
+                      images=image_data,
+                      variant_data=variant_data)
