@@ -1,5 +1,5 @@
 import scrapy
-from PipelineA.items import AmazonBrandSite
+from AmazonOneClick.items import AmazonBrandSite
 
 
 class BrandSiteSpider(scrapy.Spider):

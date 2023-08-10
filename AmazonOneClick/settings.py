@@ -1,4 +1,4 @@
-# Scrapy settings for PipelineA project
+# Scrapy settings for AmazonOneClick project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,13 +7,13 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "PipelineA"
+BOT_NAME = "AmazonOneClick"
 
-SPIDER_MODULES = ["PipelineA.spiders"]
-NEWSPIDER_MODULE = "PipelineA.spiders"
+SPIDER_MODULES = ["AmazonOneClick.spiders"]
+NEWSPIDER_MODULE = "AmazonOneClick.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-# USER_AGENT = "PipelineA (+http://www.yourdomain.com)"
+# USER_AGENT = "AmazonOneClick (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -44,13 +44,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 # SPIDER_MIDDLEWARES = {
-#    "PipelineA.middlewares.AmazononeclickSpiderMiddleware": 543,
+#    "AmazonOneClick.middlewares.AmazononeclickSpiderMiddleware": 543,
 # }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # DOWNLOADER_MIDDLEWARES = {
-#    "PipelineA.middlewares.AmazononeclickDownloaderMiddleware": 543,
+#    "AmazonOneClick.middlewares.AmazononeclickDownloaderMiddleware": 543,
 # }
 
 # Enable or disable extensions
@@ -62,8 +62,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "PipelineA.pipelines.AmazononeclickPipeline": 300,
-   "PipelineA.pipelines.GenerateID": 299,
+   "AmazonOneClick.pipelines.AmazononeclickPipeline": 300,
+   "AmazonOneClick.pipelines.GenerateID": 299,
 
 }
 
